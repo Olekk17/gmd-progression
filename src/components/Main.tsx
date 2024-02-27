@@ -97,7 +97,7 @@ export const Main: React.FC = () => {
     <div className="Main">
       {!!data && !!newRatings && (
         <div className="main-content">
-          <Row style={{ display: "flex", gap: "10px" }}>
+          <Row className="main-content-row"style={{ display: "flex", gap: "10px" }}>
             <Col xs="3">
               <StatsTable
                 data={data.traitsBefore}

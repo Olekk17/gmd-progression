@@ -57,8 +57,8 @@ export const Main: React.FC = () => {
     ({
       ...data.traitsBefore,
       ...factorisedRatings,
-      rbk: rbkModifier,
-      pbk: pbkModifier,
+      rbk: data.traitsBefore.rbk + (rbkModifier || 0),
+      pbk: data.traitsBefore.rbk + (pbkModifier || 0),
     } as unknown as AllTraitsLoaded);
 
   const ovrPlayed = ovr(modifiedRatings);

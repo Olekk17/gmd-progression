@@ -8,7 +8,6 @@ const STATS_RELATED_TO_TRAITS = {
   elu: ["rusYa", "rusLng", "rusTD"],
   rtr: ["recTD", "recLng"],
   hnd: ["capa", "recYa"],
-  rbk: ["penYds", "pen"],
   pcv: ["defPssDef", "defInt", "penYds", "pen"],
   tck: ["defTckSolo", "defTckAst", "defFmbFrc"],
   prs: ["defSk"],
@@ -17,117 +16,11 @@ const STATS_RELATED_TO_TRAITS = {
   kac: ["fgP", "xpP"],
   ppw: ["pntLng", "pntTB", "pntA"],
   pac: ["pntIn20"],
+  pbk: ["teamPssSk"],
+  rbk: ["teamRusYds"],
 };
 
-const COMMON_POSTION_STATS = {
-  "ratings.hgt": 1,
-  "ratings.stre": 1,
-  "ratings.spd": 1,
-  "ratings.endu": 1,
-  "ratings.ovr": 1,
-  "ratings.skills": 1,
-};
-
-const POSITION_STATS = {
-  QB: {
-    ...COMMON_POSTION_STATS,
-    "ratings.thv": 1,
-    "ratings.tha": 1,
-    "ratings.thp": 1,
-    "ratings.run": "$ratings.elu",
-  },
-  RB: {
-    ...COMMON_POSTION_STATS,
-    "ratings.run": "$ratings.elu",
-    "ratings.hnd": 1,
-    "ratings.rtr": 1,
-    "ratings.pbk": 1,
-    "ratings.rbk": 1,
-  },
-  WR: {
-    ...COMMON_POSTION_STATS,
-    "ratings.rtr": 1,
-    "ratings.run": "$ratings.elu",
-    "ratings.hnd": 1,
-    "ratings.rbk": 1,
-    "ratings.pbk": 1,
-  },
-  TE: {
-    ...COMMON_POSTION_STATS,
-    "ratings.rbk": 1,
-    "ratings.pbk": 1,
-    "ratings.rtr": 1,
-    "ratings.thv": 1,
-    "ratings.tha": 1,
-    "ratings.thp": 1,
-    "ratings.run": "$ratings.elu",
-    "ratings.hnd": 1,
-  },
-  OL: {
-    ...COMMON_POSTION_STATS,
-    "ratings.rbk": 1,
-    "ratings.pbk": 1,
-  },
-  DL: {
-    ...COMMON_POSTION_STATS,
-    "ratings.tck": 1,
-    "ratings.prs": 1,
-    "ratings.rns": 1,
-    "ratings.pcv": 1,
-  },
-  LB: {
-    ...COMMON_POSTION_STATS,
-    "ratings.tck": 1,
-    "ratings.prs": 1,
-    "ratings.rns": 1,
-    "ratings.pcv": 1,
-  },
-  CB: {
-    ...COMMON_POSTION_STATS,
-    "ratings.tck": 1,
-    "ratings.prs": 1,
-    "ratings.rns": 1,
-    "ratings.pcv": 1,
-  },
-  S: {
-    ...COMMON_POSTION_STATS,
-    "ratings.tck": 1,
-    "ratings.prs": 1,
-    "ratings.rns": 1,
-    "ratings.pcv": 1,
-  },
-  K: {
-    ...COMMON_POSTION_STATS,
-    "ratings.kpw": 1,
-    "ratings.kac": 1,
-  },
-  P: {
-    ...COMMON_POSTION_STATS,
-    "ratings.ppw": 1,
-    "ratings.pac": 1,
-  },
-  KR: {
-    ...COMMON_POSTION_STATS,
-    "ratings.rtr": "$ratings.ovrs.KR",
-  },
-  PR: {
-    ...COMMON_POSTION_STATS,
-    "ratings.rtr": "$ratings.ovrs.PR",
-  },
-};
-
-const leadersByPosition = new Map([
-  ["QB", "Quarterback"],
-  ["RB", "Running Backs"],
-  ["WR", "Receivers"],
-  ["TE", "Tight End"],
-  ["CB", "Corner Backs"],
-  ["S", "Safeties"],
-  ["LB", "Linebacker"],
-  ["DL", "Deffensive Tackles"],
-  ["K", "Kicker"],
-]);
-
+const KandP = ["fgLng", "fgP", "xpP", "pntLng", "pntTB", "pntA", "pntIn20"];
 const deffenseStats = ["defTckSolo", "defSk", "defInt"];
 const offenseStats = ["recYds", "rec", "recTD", "rusTD", "prTD", "krTD"];
 const statsOfPosition = {
@@ -139,19 +32,8 @@ const statsOfPosition = {
   S: deffenseStats,
   LB: deffenseStats,
   DL: deffenseStats,
-  K: [
-    "fg0",
-    "fga0",
-    "fg20",
-    "fga20",
-    "fg30",
-    "fga30",
-    "fg40",
-    "fga40",
-    "fg50",
-    "fga50",
-    "fgLng",
-  ],
+  K: KandP,
+  P: KandP,
 };
 
 const statsAndVariancesRelation = {
@@ -159,10 +41,7 @@ const statsAndVariancesRelation = {
     "pssCmp",
     "pss",
     "pssYds",
-    "pssLng",
-    "rus",
     // "rusYds",
-    "rusLng",
     "pssP",
     "recYds",
     "capa",
@@ -172,6 +51,7 @@ const statsAndVariancesRelation = {
     "pntYds",
     "pntLng",
     "PntA",
+    "fgLng",
   ],
   varianceTable2: [
     "pssTD",
@@ -182,6 +62,7 @@ const statsAndVariancesRelation = {
     "kr",
     "krTD",
     "defInt",
+    "defIntTD",
     "defPssDef",
     "defFmbFrc",
     "defFmbRec",
@@ -198,8 +79,11 @@ const statsAndVariancesRelation = {
     "pen",
   ],
   varianceTable3: [
+    "pssLng",
     "pssYa",
+    "rus",
     "rusYa",
+    "rusLng",
     "tgt",
     "rec",
     "recYa",
@@ -217,6 +101,18 @@ const statsAndVariancesRelation = {
   varianceTable4: ["fmb", "fmbLost", "pssInt" /*"pssSk"*/],
 };
 
+const varianceTable1 = [
+  { min: 0.401, max: Infinity, value: 4.0 },
+  { min: 0.301, max: 0.4, value: 3.0 },
+  { min: 0.201, max: 0.3, value: 2.0 },
+  { min: 0.101, max: 0.2, value: 1.0 },
+  { min: -0.05, max: 0.1, value: 0.0 },
+  { min: -0.15, max: -0.051, value: -1.0 },
+  { min: -0.25, max: -0.151, value: -2.0 },
+  { min: -0.35, max: -0.251, value: -3.0 },
+  { min: -Infinity, max: -0.351, value: -4.0 },
+];
+
 const varianceTable2 = [
   { min: 1.751, max: Infinity, value: 4.0 },
   { min: 1.251, max: 1.75, value: 3.0 },
@@ -228,8 +124,6 @@ const varianceTable2 = [
   { min: -0.85, max: -0.651, value: -3.0 },
   { min: -Infinity, max: -0.851, value: -4.0 },
 ];
-
-const varianceTable1 = JSON.parse(JSON.stringify(varianceTable2));
 
 const varianceTable3 = [
   { min: 1.001, max: Infinity, value: 4.0 },
@@ -432,9 +326,7 @@ const TIME_MODIFIERS = (time: number) => {
     return 0.233;
   } else if (time >= 6) {
     return 0.2;
-  } else if (time >= 5) {
-    return 0.167;
-  } else if (time === 0) {
+  } else if (time > 0) {
     return 0.167;
   }
 
@@ -458,14 +350,17 @@ function getVarianceTable(stat: any): keyof typeof statsAndVariancesRelation {
 
 function getVariance(
   value: number,
-  varianceTable: keyof typeof statsAndVariancesRelation
-) {
-  if (varianceTable === undefined) return 0;
-  for (const range of VARIANCES[varianceTable]) {
+  varianceTableName: keyof typeof statsAndVariancesRelation
+): number {
+  const varianceTable = VARIANCES[varianceTableName];
+  if (!varianceTable) return 0;
+  for (const range of varianceTable) {
     if (value >= range.min && value < range.max) {
       return range.value;
     }
   }
+
+  return 0;
 }
 
 function getMinuteFactoredVariance(
@@ -518,8 +413,6 @@ function getAvgStatsByPos(pos: string) {
   const data = JSON.parse(
     JSON.stringify(avgStats.find((el) => el.pos === pos))
   );
-  console.log(pos);
-  console.log(data);
   if (data) {
     //@ts-ignore
     delete data.pos;
@@ -527,7 +420,10 @@ function getAvgStatsByPos(pos: string) {
   return data;
 }
 
-const getProgressionRatingImpact = (playerPotential: number, newRating: number) => {
+const getProgressionRatingImpact = (
+  playerPotential: number,
+  newRating: number
+) => {
   const diff = playerPotential - Math.abs(newRating);
 
   const thresholds = [
@@ -551,8 +447,6 @@ const getProgressionRatingImpact = (playerPotential: number, newRating: number) 
 };
 
 export const comparsionTables = {
-  POSITION_STATS: POSITION_STATS,
-  LEADERS_BY_POSITION: leadersByPosition,
   STATS_OF_POSITION: statsOfPosition,
   NOT_USED_STATS: notUsedStats,
   VARIANCES: { varianceTable1, varianceTable2, varianceTable3, varianceTable4 },
@@ -565,4 +459,5 @@ export const comparsionTables = {
   getTimeModifiedValue,
   getAvgStatsByPos,
   getProgressionRatingImpact,
+  STATS_RELATED_TO_TRAITS,
 };

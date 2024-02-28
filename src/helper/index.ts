@@ -1,18 +1,25 @@
 import { weightings } from "../constants/ratingWeightings";
 import { AllTraitsLoaded, GameStats, TraitsToDisplay } from "../interface";
 import avgData from "../constants/availableTeams.avgPosStats.json";
+import { comparsionTables } from "../constants/comparsionTables";
 
-export const mapData = (data: Record<string, any>) => {
+export const mapData = (data: Record<string, any>, sort?: boolean) => {
   if (!data) {
     return null;
   }
-  return Object.entries(data).map(([key, value], index) => {
+
+  const res = Object.entries(data).map(([key, value], index) => {
     return {
       key: index,
       trait: key,
       value,
     };
   });
+
+  if (sort) {
+    res.sort((a, b) => a.trait.localeCompare(b.trait));
+  }
+  return res;
 };
 
 export const ovr = (ratings?: AllTraitsLoaded | null) => {
@@ -50,4 +57,56 @@ export const getAvgComparsion = (stats: any, pos: keyof typeof weightings) => {
   }
 
   return result;
+};
+
+export function bound(x: number, min: number, max: number) {
+  if (x < min) {
+      return min;
+  }
+  if (x > max) {
+      return max;
+  }
+  return x;
+}
+
+export function preparedStats(stats: Record<string, any>) {
+  const statsObjCopy = JSON.parse(JSON.stringify(stats));
+  if ('min' in statsObjCopy) {
+    delete statsObjCopy.min;
+  }
+  if ('gs' in statsObjCopy) {
+    delete statsObjCopy.gs;
+  }
+  if ('teamPssSk' in statsObjCopy && 'teamRusYds' in statsObjCopy) {
+    const cachedTeamPssSk = statsObjCopy.teamPssSk;
+    const cachedTeamRusYds = statsObjCopy.teamRusYds;
+    delete statsObjCopy.teamPssSk;
+    delete statsObjCopy.teamRusYds;
+    statsObjCopy.teamPssSk = cachedTeamPssSk;
+    statsObjCopy.teamRusYds = cachedTeamRusYds;
+  }
+  comparsionTables.NOT_USED_STATS.forEach((stat) => {
+    if (stat in statsObjCopy) {
+      delete statsObjCopy[stat];
+    }
+  })
+  
+  return statsObjCopy;
+}
+
+export const getTraitModifiers = (stats: GameStats, trait?: keyof typeof comparsionTables.STATS_RELATED_TO_TRAITS) => {
+  if (!trait) {
+    return [];
+  };
+  const statsCopy = JSON.parse(JSON.stringify(stats));
+  const traits = comparsionTables.STATS_RELATED_TO_TRAITS[trait];
+
+  if (!traits) {
+    return [];
+  }
+  const traitModifiers: Record<string, number | string>[] = [];
+  for (const key of traits) {
+    traitModifiers.push({ trait: key, value: statsCopy[key] });
+  }
+  return traitModifiers;
 };

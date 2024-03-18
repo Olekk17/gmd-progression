@@ -469,6 +469,7 @@ function getMinuteFactoredVariance(
 
 function getTimeModifiedValue(value: number, minutes: number, pos?: string) {
   if ((pos === "K" || pos === "P") && !!minutes) {
+    return value;
   }
   return value * TIME_MODIFIERS(minutes) || 0;
 }

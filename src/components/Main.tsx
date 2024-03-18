@@ -81,7 +81,8 @@ export const Main: React.FC = () => {
 
   const influence = comparsionTables.getTimeModifiedValue(
     pureInfluence || 0,
-    data?.gameStats.min || 0
+    data?.gameStats.min || 0,
+    data?.traitsBefore.pos
   );
 
   const newRatings = factorisedRatings && {
@@ -129,7 +130,7 @@ export const Main: React.FC = () => {
           <br />
           <span>
             Time multiplier{" "}
-            {comparsionTables.getTimeModifiedValue(1, data.gameStats.min)}
+            {comparsionTables.getTimeModifiedValue(1, data.gameStats.min, data.traitsBefore.pos)}
           </span>
           <StatsToTraitData
             traitModifiers={getTraitModifiers(

@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/gmd-progression/static/css/main.4f93ae7a.css",
-    "main.js": "/gmd-progression/static/js/main.e623b753.js",
+    "main.js": "/gmd-progression/static/js/main.b10ca5c1.js",
     "static/js/453.ed3810f9.chunk.js": "/gmd-progression/static/js/453.ed3810f9.chunk.js",
     "index.html": "/gmd-progression/index.html",
     "main.4f93ae7a.css.map": "/gmd-progression/static/css/main.4f93ae7a.css.map",
-    "main.e623b753.js.map": "/gmd-progression/static/js/main.e623b753.js.map",
+    "main.b10ca5c1.js.map": "/gmd-progression/static/js/main.b10ca5c1.js.map",
     "453.ed3810f9.chunk.js.map": "/gmd-progression/static/js/453.ed3810f9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4f93ae7a.css",
-    "static/js/main.e623b753.js"
+    "static/js/main.b10ca5c1.js"
   ]
 }

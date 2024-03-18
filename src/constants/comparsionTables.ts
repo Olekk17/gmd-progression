@@ -4,20 +4,20 @@ const STATS_RELATED_TO_TRAITS = {
   thv: ["pssInt", "pssSk", "pssYds"],
   thp: ["pssLng", "pssYa"],
   tha: ["pssP", "pssTD"],
-  bsc: ["fmb", "fmbLost"],
-  elu: ["rusYa", "rusLng", "rusTD"],
-  rtr: ["recTD", "recLng"],
+  bsc: ["fmb", "fmbP"],
+  elu: ["rusYa", "rusYds", "rusTD"],
+  rtr: ["recTD", "tgt"],
   hnd: ["capa", "recYa"],
-  pcv: ["defPssDef", "defInt", "penYds", "pen"],
-  tck: ["defTckSolo", "defTckAst", "defFmbFrc"],
+  rbk: ["pen"],
+  pbk: ["pssSk"],
+  pcv: ["defPssDef", "defInt", "pen"],
+  tck: ["defTckT", "defFmbFrc"],
   prs: ["defSk"],
-  rns: ["defTckLoss", "defSft"],
+  rns: ["defTckLoss", "defSft", "defRunDef"],
   kpw: ["fgLng"],
   kac: ["fgP", "xpP"],
   ppw: ["pntLng", "pntTB", "pntA"],
   pac: ["pntIn20"],
-  pbk: ["teamPssSk"],
-  rbk: ["teamRusYds"],
 };
 
 const KandP = ["fgLng", "fgP", "xpP", "pntLng", "pntTB", "pntA", "pntIn20"];
@@ -41,7 +41,7 @@ const statsAndVariancesRelation = {
     "pssCmp",
     "pss",
     "pssYds",
-    // "rusYds",
+    "rusYds",
     "pssP",
     "recYds",
     "capa",
@@ -54,22 +54,23 @@ const statsAndVariancesRelation = {
     "fgLng",
   ],
   varianceTable2: [
-    "pssTD",
-    "rusTD",
-    "recTD",
+    "pssLng",
+    // "pssTD",
+    // "rusTD",
+    // "recTD",
     "pr",
     "prTD",
     "kr",
     "krTD",
-    "defInt",
+    // "defInt",
     "defIntTD",
-    "defPssDef",
-    "defFmbFrc",
-    "defFmbRec",
-    "defFmbTD",
-    "defSk",
-    "defTckLoss",
-    "defSft",
+    // "defPssDef",
+    // "defFmbFrc",
+    // "defFmbRec",
+    // "defFmbTD",
+    // "defSk",
+    // "defTckLoss",
+    // "defSft",
     "xp",
     "xpa",
     "pnt",
@@ -79,7 +80,6 @@ const statsAndVariancesRelation = {
     "pen",
   ],
   varianceTable3: [
-    "pssLng",
     "pssYa",
     "rus",
     "rusYa",
@@ -97,8 +97,19 @@ const statsAndVariancesRelation = {
     "fgP",
     "xpP",
     "penYds",
+    "defTckT",
   ],
-  varianceTable4: ["fmb", "fmbLost", "pssInt" /*"pssSk"*/],
+  varianceTable4: [
+    /*"fmb", "fmbLost", "pssInt", "pssSk"*/
+  ] as string[],
+  varianceTable5: ["rusTD", "recTD", "defSk", "defTckLoss"],
+  varianceTable6: ["pssTD"],
+  varianceTable7: ["fmbLost", "fmb", "pssInt"],
+  varianceTable8: ["defFmbTD", "defSft"],
+  varianceTable9: ["defInt", "defPssDef", "defFmbFrc", "defFmbRec"],
+  varianceTable10: ["fmbP"],
+  varianceTable11: ["pssSk"],
+  varianceTable12: ["opponentRusYds"],
 };
 
 const varianceTable1 = [
@@ -149,11 +160,88 @@ const varianceTable4 = [
   { min: -Infinity, max: -0.851, value: 4.0 },
 ];
 
+// Touchdowns and Def Sacks
+const varianceTable5 = [
+  { min: 0, max: 1, value: -1 },
+  { min: 1, max: 2, value: 1 },
+  { min: 2, max: 3, value: 2 },
+  { min: 3, max: 4, value: 3 },
+  { min: 4, max: Infinity, value: 4 },
+];
+// QB touchdowns
+const varianceTable6 = [
+  { min: 0, max: 1, value: -2 },
+  { min: 1, max: 2, value: 0 },
+  { min: 2, max: 3, value: 1 },
+  { min: 3, max: 4, value: 2 },
+  { min: 4, max: 5, value: 3 },
+  { min: 5, max: Infinity, value: 4 },
+];
+// Interceptions and Fumbles
+const varianceTable7 = [
+  { min: 0, max: 1, value: 2 },
+  { min: 1, max: 2, value: 0 },
+  { min: 2, max: 3, value: -2 },
+  { min: 3, max: 4, value: -3 },
+  { min: 4, max: Infinity, value: -4 },
+];
+// Safety
+const varianceTable8 = [
+  { min: 0, max: 1, value: 0 },
+  { min: 1, max: Infinity, value: 3 },
+];
+// Passes Defended
+const varianceTable9 = [
+  { min: 0, max: 1, value: -1 },
+  { min: 1, max: 2, value: 2 },
+  { min: 2, max: Infinity, value: 4 },
+];
+// Fumble Percentage
+const varianceTable10 = [
+  { min: 0, max: 0.01, value: 2 },
+  { min: 0.01, max: 0.04, value: 1 },
+  { min: 0.0401, max: 0.067, value: 0 },
+  { min: 0.068, max: 0.1, value: -1 },
+  { min: 0.101, max: 0.2, value: -2 },
+  { min: 0.201, max: 0.4, value: -3 },
+  { min: 0.401, max: Infinity, value: -4 },
+];
+// Times Sacked
+const varianceTable11 = [
+  { min: 0, max: 1, value: 3 },
+  { min: 1, max: 2, value: 1 },
+  { min: 2, max: 3, value: 0 },
+  { min: 3, max: 4, value: -1 },
+  { min: 4, max: 5, value: -2 },
+  { min: 5, max: 6, value: -3 },
+  { min: 6, max: Infinity, value: -4 },
+];
+// DefRunDef
+const varianceTable12 = [
+  { min: 0, max: 60, value: 4 },
+  { min: 60, max: 80, value: 3 },
+  { min: 80, max: 100, value: 2 },
+  { min: 100, max: 110, value: 1 },
+  { min: 110, max: 120, value: 0 },
+  { min: 120, max: 130, value: -1 },
+  { min: 130, max: 140, value: -2 },
+  { min: 140, max: 150, value: -3 },
+  { min: 150, max: Infinity, value: -4 },
+];
+
 const VARIANCES = {
   varianceTable1,
   varianceTable2,
   varianceTable3,
   varianceTable4,
+  varianceTable5,
+  varianceTable6,
+  varianceTable7,
+  varianceTable8,
+  varianceTable9,
+  varianceTable10,
+  varianceTable11,
+  varianceTable12,
 };
 
 const notUsedStats = [
@@ -265,13 +353,15 @@ const getComputedStats = (stats: any) => {
     capa: divideStats(stats["rec"], stats["tgt"]),
     recYa: divideStats(stats["recYds"], stats["tgt"]),
     fgP:
-      stats["fg0"] +
-        stats["fg20"] +
-        stats["fg30"] +
-        stats["fg40"] +
-        stats["fg50"] || 0,
+      +stats["fg0"] +
+        +stats["fg20"] +
+        +stats["fg30"] +
+        +stats["fg40"] +
+        +stats["fg50"] || 0,
     xpP: divideStats(stats["xp"], stats["xpa"]),
     pntA: divideStats(stats["pntYds"], stats["pnt"]),
+    fmbP: divideStats(stats["fmb"], +stats["rec"] + +stats["rus"]),
+    defTckT: +stats["defTckAst"] + +stats["defTckSolo"],
   };
 };
 
@@ -336,6 +426,10 @@ const TIME_MODIFIERS = (time: number) => {
 function getVarianceTable(stat: any): keyof typeof statsAndVariancesRelation {
   let varianceTable;
   for (const table in statsAndVariancesRelation) {
+    const smth =
+      statsAndVariancesRelation[
+        table as keyof typeof statsAndVariancesRelation
+      ];
     if (
       statsAndVariancesRelation[
         table as keyof typeof statsAndVariancesRelation
@@ -373,14 +467,25 @@ function getMinuteFactoredVariance(
   return getTimeModifiedValue(variance, minutes);
 }
 
-function getTimeModifiedValue(value: number, minutes: number) {
+function getTimeModifiedValue(value: number, minutes: number, pos?: string) {
+  if ((pos === "K" || pos === "P") && !!minutes) {
+  }
   return value * TIME_MODIFIERS(minutes) || 0;
 }
 
-function getStatsFactors(statsDiffs: any, minutes: number) {
+function getStatsFactors(statsDiffs: any, minutes: number, pos?: string) {
   const factors = Object.keys(statsDiffs).reduce((acc, stat) => {
-    //@ts-ignore
-    acc[stat] = getMinuteFactoredVariance(statsDiffs[stat], stat, minutes);
+    let min = minutes;
+    if (pos === "K" || pos === "P") {
+      min = 60;
+    }
+    if (stat === "opponentRusYds") {
+      //@ts-ignore
+      acc["defRunDef"] = getMinuteFactoredVariance(statsDiffs[stat], stat, min);
+    } else {
+      //@ts-ignore
+      acc[stat] = getMinuteFactoredVariance(statsDiffs[stat], stat, min);
+    }
     return acc;
   }, {});
 
@@ -439,17 +544,51 @@ const getProgressionRatingImpact = (
   ];
 
   for (const threshold of thresholds) {
-    if (diff > threshold.min && diff <= threshold.max) {
+    if (diff >= threshold.min && diff < threshold.max) {
       return threshold.value;
     }
   }
   return 0;
 };
 
+const statsWithNoPercentageComparsion = [
+  "rusTD",
+  "recTD",
+  "defSk",
+  "defTckLoss",
+  "pssTD",
+  "fmbLost",
+  "fmb",
+  "pssInt",
+  "defFmbTD",
+  "defSft",
+  "defInt",
+  "defPssDef",
+  "defFmbFrc",
+  "defFmbRec",
+  "fmbP",
+  "pssSk",
+  "opponentRusYds",
+];
+
+const getStatsWithNoPercentageComparsion = (
+  obj: Record<string, number | string>
+) => {
+  const result = {};
+  for (const key in obj) {
+    if (statsWithNoPercentageComparsion.includes(key)) {
+      //@ts-ignore
+      result[key] = obj[key];
+    }
+  }
+
+  return result;
+};
+
 export const comparsionTables = {
   STATS_OF_POSITION: statsOfPosition,
   NOT_USED_STATS: notUsedStats,
-  VARIANCES: { varianceTable1, varianceTable2, varianceTable3, varianceTable4 },
+  VARIANCES,
   STATS_VARIANCES_RELATION: statsAndVariancesRelation,
   BLOCKING_CHANGE_CALC: { pbkChangeByTeamPssSk, rbkChangeByTeamRusYds },
   getComputedStats,
@@ -460,4 +599,5 @@ export const comparsionTables = {
   getAvgStatsByPos,
   getProgressionRatingImpact,
   STATS_RELATED_TO_TRAITS,
+  getStatsWithNoPercentageComparsion,
 };

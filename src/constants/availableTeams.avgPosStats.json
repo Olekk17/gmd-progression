@@ -188,15 +188,7 @@
   "pntA": 0
 },
 {
-  "_id": {
-    "$oid": "65df51b91f8e700f5f2f59fc"
-  },
   "pos": "TE",
-  "playoffs": 0,
-  "tid": 3.3214285714285716,
-  "yearsWithTeam": 0.21428571428571427,
-  "av": 0,
-  "qbW": 0,
   "gp": 896,
   "fmb": 0,
   "fmbLost": 0,

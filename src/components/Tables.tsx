@@ -1,5 +1,5 @@
-import { PbkTable } from "./PbkTable";
-import { RbkTable } from "./RbkTable";
+// import { PbkTable } from "./PbkTable";
+// import { RbkTable } from "./RbkTable";
 import { TimeModifierTable } from "./TimeModifierTable";
 import { VarianceTables } from "./VarianceTables";
 
@@ -15,12 +15,12 @@ export const Tables: React.FC = () => {
       <div className="variance-tables">
         <VarianceTables />
       </div>
-      <div className="rbk-table">
+      {/* <div className="rbk-table">
         <RbkTable />
       </div>
       <div className="pbk-table">
         <PbkTable />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -77,13 +77,10 @@ export function preparedStats(stats: Record<string, any>) {
   if ('gs' in statsObjCopy) {
     delete statsObjCopy.gs;
   }
-  if ('teamPssSk' in statsObjCopy && 'teamRusYds' in statsObjCopy) {
-    const cachedTeamPssSk = statsObjCopy.teamPssSk;
-    const cachedTeamRusYds = statsObjCopy.teamRusYds;
-    delete statsObjCopy.teamPssSk;
-    delete statsObjCopy.teamRusYds;
-    statsObjCopy.teamPssSk = cachedTeamPssSk;
-    statsObjCopy.teamRusYds = cachedTeamRusYds;
+  const opponentRusYds = Number(String(statsObjCopy.opponentRusYds));
+  if ('opponentRusYds' in statsObjCopy && !Number.isNaN(opponentRusYds)) {
+    delete statsObjCopy.opponentRusYds;
+    statsObjCopy.opponentRusYds = opponentRusYds;
   }
   comparsionTables.NOT_USED_STATS.forEach((stat) => {
     if (stat in statsObjCopy) {

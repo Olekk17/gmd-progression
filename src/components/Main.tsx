@@ -22,24 +22,6 @@ export const Main: React.FC = () => {
     string | null
   >(null);
 
-  const pbkModifierRaw =
-    data &&
-    comparsionTables.BLOCKING_CHANGE_CALC.pbkChangeByTeamPssSk(
-      data.gameStats.teamPssSk
-    );
-  const rbkModifierRaw =
-    data &&
-    comparsionTables.BLOCKING_CHANGE_CALC.rbkChangeByTeamRusYds(
-      data.gameStats.teamRusYds
-    );
-
-  const rbkModifier =
-    rbkModifierRaw &&
-    comparsionTables.getTimeModifiedValue(rbkModifierRaw, data?.gameStats.min);
-  const pbkModifier =
-    pbkModifierRaw &&
-    comparsionTables.getTimeModifiedValue(pbkModifierRaw, data?.gameStats.min);
-
   const statsObjCopy = data && {
     ...data.gameStats,
     ...comparsionTables.getComputedStats(data.gameStats),
@@ -50,15 +32,22 @@ export const Main: React.FC = () => {
     data?.traitsBefore.pos
   );
 
+  const statsWithNoPercentageComparsion = statsObjCopy
+    ? comparsionTables.getStatsWithNoPercentageComparsion(statsObjCopy)
+    : {};
+
+  const dataToUseWithTables = {
+    ...statsDiffs,
+    ...statsWithNoPercentageComparsion,
+  };
+
   const statsFactors =
     statsObjCopy &&
-    comparsionTables.getStatsFactors(statsDiffs, statsObjCopy.min);
-  if (statsFactors) {
-    //@ts-ignore
-    statsFactors.teamPssSk = pbkModifier;
-    //@ts-ignore
-    statsFactors.teamRusYds = rbkModifier;
-  }
+    comparsionTables.getStatsFactors(
+      dataToUseWithTables,
+      statsObjCopy.min,
+      data?.traitsBefore.pos
+    );
 
   const ratingsToBeChanged =
     data?.traitsBefore.pos && Object.keys(weightings[data?.traitsBefore.pos]);
@@ -74,13 +63,6 @@ export const Main: React.FC = () => {
           bound(Math.round(value * 100) / 100, 0, 100),
         ])
     );
-
-  if (ratingsToBeChanged?.includes("rbk") && factorisedRatings && rbkModifier) {
-    factorisedRatings.rbk = bound(data.traitsBefore.rbk + rbkModifier, 0, 100);
-  }
-  if (ratingsToBeChanged?.includes("pbk") && factorisedRatings && pbkModifier) {
-    factorisedRatings.pbk = bound(data.traitsBefore.pbk + pbkModifier, 0, 100);
-  }
   const modifiedRatings =
     data &&
     ({
@@ -90,48 +72,47 @@ export const Main: React.FC = () => {
 
   const ovrPlayed = ovr(modifiedRatings);
 
-  const influence =
+  const pureInfluence =
     data &&
     comparsionTables.getProgressionRatingImpact(
       data?.traitsBefore.pot,
       ovrPlayed
     );
 
-  const newRatings = factorisedRatings &&
-    influence && {
-      ...data.traitsBefore,
-      ...Object.keys(factorisedRatings).reduce((acc, rating) => {
-        if (!ratingsToBeChanged.includes(rating)) {
-          //@ts-ignore
-          acc[rating] = modifiedRatings[rating];
-        } else {
-          //@ts-ignore
-          acc[rating] = bound(
-            //@ts-ignore
-            Math.round((+modifiedRatings[rating] + influence) * 100) / 100,
-            0,
-            100
-          );
-        }
+  const influence = comparsionTables.getTimeModifiedValue(
+    pureInfluence || 0,
+    data?.gameStats.min || 0
+  );
 
-        return acc;
-      }, {}),
-    };
+  const newRatings = factorisedRatings && {
+    ...data.traitsBefore,
+    ...Object.keys(factorisedRatings).reduce((acc, rating) => {
+      if (!ratingsToBeChanged.includes(rating)) {
+        //@ts-ignore
+        acc[rating] = modifiedRatings[rating];
+      } else {
+        //@ts-ignore
+        acc[rating] = bound(
+          //@ts-ignore
+          Math.round((+modifiedRatings[rating] + influence) * 100) / 100,
+          0,
+          100
+        );
+      }
+
+      return acc;
+    }, {}),
+  };
 
   if (newRatings) {
     //@ts-ignore
     newRatings.ovr = ovr(newRatings);
     newRatings.season = data?.traitsAfter.season;
   }
-
-  const correct = _.mapValues(newRatings, (value, key) => {
-    //@ts-ignore
-    if (Math.abs((data?.traitsAfter[key] || 0) - value) < 0.5) {
-      return true;
-    }
-
-    return false;
-  });
+  const correct =
+    newRatings &&
+    data?.traitsAfter &&
+    JSON.stringify(newRatings) === JSON.stringify(data.traitsAfter);
 
   const preparedGameStats =
     data &&
@@ -192,7 +173,9 @@ export const Main: React.FC = () => {
               <Col xs="3">
                 <StatsTable
                   data={data.traitsBefore}
-                  title={`Traits before game ${data.traitsBefore.pos} - ovr: ${ovr(data.traitsBefore)},
+                  title={`Traits before game ${
+                    data.traitsBefore.pos
+                  } - ovr: ${ovr(data.traitsBefore)},
                   pot: ${data.traitsBefore.pot}`}
                 />
               </Col>

@@ -416,7 +416,7 @@ const TIME_MODIFIERS = (time: number) => {
     return 0.233;
   } else if (time >= 6) {
     return 0.2;
-  } else if (time > 0) {
+  } else if (time >= 5) {
     return 0.167;
   }
 

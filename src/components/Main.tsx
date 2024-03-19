@@ -72,17 +72,11 @@ export const Main: React.FC = () => {
 
   const ovrPlayed = ovr(modifiedRatings);
 
-  const pureInfluence =
-    data &&
-    comparsionTables.getProgressionRatingImpact(
-      data?.traitsBefore.pot,
-      ovrPlayed
-    );
-
-  const influence = comparsionTables.getTimeModifiedValue(
-    pureInfluence || 0,
-    data?.gameStats.min || 0,
-    data?.traitsBefore.pos
+  const influence =
+  data &&
+  comparsionTables.getProgressionRatingImpact(
+    data?.traitsBefore.pot,
+    ovrPlayed
   );
 
   const newRatings = factorisedRatings && {
@@ -95,7 +89,7 @@ export const Main: React.FC = () => {
         //@ts-ignore
         acc[rating] = bound(
           //@ts-ignore
-          Math.round((+modifiedRatings[rating] + influence) * 100) / 100,
+          Math.round((+modifiedRatings[rating] + (!!statsObjCopy.min ? influence : 0)) * 100) / 100,
           0,
           100
         );

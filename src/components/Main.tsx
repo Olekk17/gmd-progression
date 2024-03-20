@@ -70,6 +70,10 @@ export const Main: React.FC = () => {
       ...factorisedRatings,
     } as unknown as AllTraitsLoaded);
 
+  if (modifiedRatings && ["TE", "WR"].includes(data.traitsBefore.pos) && data.gameStats.rus === 0) {
+    modifiedRatings.elu = data.traitsBefore.elu;
+  }
+
   const ovrPlayed = ovr(modifiedRatings);
 
   const influence =

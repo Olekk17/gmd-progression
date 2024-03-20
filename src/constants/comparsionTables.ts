@@ -4,7 +4,7 @@ const STATS_RELATED_TO_TRAITS = {
   thv: ["pssInt", "pssSk", "pssYds"],
   thp: ["pssLng", "pssYa"],
   tha: ["pssP", "pssTD"],
-  bsc: ["fmb", "fmbP"],
+  bsc: ["fmbP"],
   elu: ["rusYa", "rusYds", "rusTD"],
   rtr: ["recTD", "tgt"],
   hnd: ["capa", "recYa"],
@@ -162,7 +162,7 @@ const varianceTable4 = [
 
 // Touchdowns and Def Sacks
 const varianceTable5 = [
-  { min: 0, max: 1, value: -1 },
+  { min: 0, max: 1, value: 0 },
   { min: 1, max: 2, value: 1 },
   { min: 2, max: 3, value: 2 },
   { min: 3, max: 4, value: 3 },

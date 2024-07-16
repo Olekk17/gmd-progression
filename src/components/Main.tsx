@@ -70,42 +70,56 @@ export const Main: React.FC = () => {
       ...factorisedRatings,
     } as unknown as AllTraitsLoaded);
 
-  if (modifiedRatings && ["TE", "WR"].includes(data.traitsBefore.pos) && data.gameStats.rus === 0) {
+  if (
+    modifiedRatings &&
+    ["TE", "WR"].includes(data.traitsBefore.pos) &&
+    data.gameStats.rus === 0
+  ) {
     modifiedRatings.elu = data.traitsBefore.elu;
   }
 
   const ovrPlayed = ovr(modifiedRatings);
 
-  const influence =
-  data &&
-  comparsionTables.getProgressionRatingImpact(
-    data?.traitsBefore.pot,
-    ovrPlayed
-  );
+  const influence = data
+    ? comparsionTables.getProgressionRatingImpact(
+        data?.traitsBefore.pot,
+        ovrPlayed
+      )
+    : 0;
 
-  const newRatings = factorisedRatings && {
-    ...data.traitsBefore,
-    ...Object.keys(factorisedRatings).reduce((acc, rating) => {
-      if (!ratingsToBeChanged.includes(rating)) {
-        //@ts-ignore
-        acc[rating] = modifiedRatings[rating];
-      } else {
-        //@ts-ignore
-        acc[rating] = bound(
+  const newRatings =
+    modifiedRatings &&
+    ratingsToBeChanged && {
+      ...data.traitsBefore,
+      ...Object.keys(factorisedRatings).reduce((acc, rating) => {
+        const influenceMultiplier =
           //@ts-ignore
-          Math.round((+modifiedRatings[rating] + (!!statsObjCopy.min ? influence : 0)) * 100) / 100,
-          0,
-          100
-        );
-      }
-
-      return acc;
-    }, {}),
-  };
+          +modifiedRatings[rating] > modifiedRatings.pot ? 0 : 1;
+        if (!ratingsToBeChanged.includes(rating)) {
+          //@ts-ignore
+          acc[rating] = modifiedRatings[rating];
+        } else {
+          //@ts-ignore
+          acc[rating] = bound(
+            Math.round(
+              //@ts-ignore
+              (Number(modifiedRatings[rating]) +
+                influence * influenceMultiplier) *
+                100
+            ) / 100,
+            5,
+            100
+          );
+        }
+  
+        return acc;
+      }, {})
+    };
 
   if (newRatings) {
     //@ts-ignore
     newRatings.ovr = ovr(newRatings);
+    //@ts-ignore
     newRatings.season = data?.traitsAfter.season;
   }
   const correct =
@@ -128,7 +142,11 @@ export const Main: React.FC = () => {
           <br />
           <span>
             Time multiplier{" "}
-            {comparsionTables.getTimeModifiedValue(1, data.gameStats.min, data.traitsBefore.pos)}
+            {comparsionTables.getTimeModifiedValue(
+              1,
+              data.gameStats.min,
+              data.traitsBefore.pos
+            )}
           </span>
           <StatsToTraitData
             traitModifiers={getTraitModifiers(
@@ -202,7 +220,7 @@ export const Main: React.FC = () => {
               <Col xs="3">
                 <StatsTable
                   data={newRatings}
-                  title={`Calculated traits after game - ${ovr(newRatings)}`}
+                  title={`Calculated traits after game - ${ovr(newRatings as any)}`}
                   backgroundColor={correct ? "lightgreen" : "lightcoral"}
                 />
               </Col>

@@ -43,6 +43,7 @@ const statsAndVariancesRelation = {
     "pssYds",
     "rusYds",
     "pssP",
+    // "recYds", moved to table 3
     "capa",
     "prYds",
     "krYds",
@@ -76,17 +77,17 @@ const statsAndVariancesRelation = {
     "pntTB",
     "pntIn20",
     "pntBlk",
-    "pen",
+    // "pen", // moved to separate table
   ],
   varianceTable3: [
     "pssYa",
     "rus",
     "rusYa",
-    "recYds",
     "rusLng",
     "tgt",
     "rec",
     "recYa",
+    "recYds",
     "recLng",
     "defIntYds",
     "defIntLng",
@@ -106,10 +107,13 @@ const statsAndVariancesRelation = {
   varianceTable6: ["pssTD"],
   varianceTable7: ["fmbLost", "fmb", "pssInt"],
   varianceTable8: ["defFmbTD", "defSft"],
-  varianceTable9: ["defInt", "defPssDef", "defFmbFrc", "defFmbRec"],
+  varianceTable9: [/*"defInt", "defPssDef", */"defFmbFrc", "defFmbRec"],
   varianceTable10: ["fmbP"],
   varianceTable11: ["pssSk"],
   varianceTable12: ["opponentRusYds"],
+  varianceTable13: ["pen"],
+  varianceTable14: ["defPssPct"],
+  varianceTable15: ["defInt_plus_defPssDef"],
 };
 
 const varianceTable1 = [
@@ -159,7 +163,6 @@ const varianceTable4 = [
   { min: -0.85, max: -0.651, value: 3.0 },
   { min: -Infinity, max: -0.851, value: 4.0 },
 ];
-
 // Touchdowns and Def Sacks
 const varianceTable5 = [
   { min: 0, max: 1, value: 0 },
@@ -208,26 +211,46 @@ const varianceTable10 = [
 ];
 // Times Sacked
 const varianceTable11 = [
-  { min: 0, max: 1, value: 3 },
+  { min: 0, max: 1, value: 2 },
   { min: 1, max: 2, value: 1 },
   { min: 2, max: 3, value: 0 },
   { min: 3, max: 4, value: -1 },
-  { min: 4, max: 5, value: -2 },
-  { min: 5, max: 6, value: -3 },
-  { min: 6, max: Infinity, value: -4 },
+  { min: 4, max: 6, value: -2 },
+  { min: 6, max: Infinity, value: -3 },
 ];
-// DefRunDef
+//Defensive run stopping
 const varianceTable12 = [
-  { min: 0, max: 60, value: 4 },
-  { min: 60, max: 80, value: 3 },
-  { min: 80, max: 100, value: 2 },
-  { min: 100, max: 110, value: 1 },
+  { min: 0, max: 0.5, value: 3 },
+  { min: 80, max: 99, value: 2 },
+  { min: 100, max: 109, value: 1 },
   { min: 110, max: 120, value: 0 },
-  { min: 120, max: 130, value: -1 },
-  { min: 130, max: 140, value: -2 },
-  { min: 140, max: 150, value: -3 },
-  { min: 150, max: Infinity, value: -4 },
+  { min: 121, max: 130, value: -1 },
+  { min: 131, max: 140, value: -2 },
+  { min: 141, max: 150, value: -3 },
+  { min: 151, max: Infinity, value: -4 },
 ];
+// penalties
+const varianceTable13 = [
+  { min: 0, max: 1, value: 1 },
+  { min: 1, max: 2, value: -1 },
+  { min: 2, max: 3, value: -3 },
+  { min: 3, max: Infinity, value: -4 },
+];
+// defensive pass completion
+const varianceTable14 = [
+  { min: -Infinity, max: 0.53, value: 3 },
+  { min: 0.54, max: 0.58, value: 2 },
+  { min: 0.58, max: 0.62, value: 1 },
+  { min: 0.62, max: 0.66, value: 0 },
+  { min: 0.66, max: Infinity, value: -1 },
+];
+// defPssDef + defInt combined
+const varianceTable15 = [
+  { min: 0, max: 1, value: 0 },
+  { min: 1, max: 2, value: 1 },
+  { min: 2, max: 3, value: 2 },
+  { min: 3, max: Infinity, value: 4 },
+]
 
 const VARIANCES = {
   varianceTable1,
@@ -242,6 +265,9 @@ const VARIANCES = {
   varianceTable10,
   varianceTable11,
   varianceTable12,
+  varianceTable13,
+  varianceTable14,
+  varianceTable15,
 };
 
 const notUsedStats = [
@@ -268,52 +294,6 @@ const notUsedStats = [
   "utid",
   "jerseyNumber",
 ];
-
-const pbkChangeByTeamPssSk = (num: number) => {
-  if (num >= 8) {
-    return -3;
-  }
-  if (num >= 6) {
-    return -2;
-  }
-  if (num >= 4) {
-    return -1;
-  }
-  if (num === 3) {
-    return 0;
-  }
-  if (num === 2) {
-    return 1;
-  }
-  if (num === 1) {
-    return 2;
-  }
-  if (num === 0) {
-    return 3;
-  }
-};
-
-const rbkChangeByTeamRusYds = (num: number) => {
-  if (num > 140) {
-    return 3;
-  }
-  if (num > 130) {
-    return 2;
-  }
-  if (num > 120) {
-    return 1;
-  }
-  if (num > 110) {
-    return 0;
-  }
-  if (num > 100) {
-    return -1;
-  }
-  if (num > 80) {
-    return -2;
-  }
-  return -3;
-};
 
 const getPlayerStatsComperesion = (statsObj: any, pos: any) => {
   const averageStats = avgStats.find((el) => el.pos === pos);
@@ -362,6 +342,7 @@ const getComputedStats = (stats: any) => {
     pntA: divideStats(stats["pntYds"], stats["pnt"]),
     fmbP: divideStats(stats["fmb"], +stats["rec"] + +stats["rus"]),
     defTckT: +stats["defTckAst"] + +stats["defTckSolo"],
+    defInt_plus_defPssDef: +stats["defPssDef"] + +stats["defInt"],
   };
 };
 
@@ -426,14 +407,10 @@ const TIME_MODIFIERS = (time: number) => {
 function getVarianceTable(stat: any): keyof typeof statsAndVariancesRelation {
   let varianceTable;
   for (const table in statsAndVariancesRelation) {
-    const smth =
-      statsAndVariancesRelation[
-        table as keyof typeof statsAndVariancesRelation
-      ];
     if (
       statsAndVariancesRelation[
         table as keyof typeof statsAndVariancesRelation
-      ].includes(stat)
+      ].map(s => s.toLowerCase()).includes(stat.toLowerCase())
     ) {
       varianceTable = table;
       break;
@@ -462,6 +439,7 @@ function getMinuteFactoredVariance(
   stat: string,
   minutes: number
 ) {
+  
   let varianceTable = getVarianceTable(stat);
   const variance = getVariance(value, varianceTable);
   return getTimeModifiedValue(variance, minutes);
@@ -493,6 +471,23 @@ function getStatsFactors(statsDiffs: any, minutes: number, pos?: string) {
   return factors;
 }
 
+function getTraitPotMultiplier (pot: number, trait: number) {
+  const traitPotPctDiff = (trait - pot) / pot;
+  return traitPotPctDiff > 0.6 
+    ? 0.25 
+    : traitPotPctDiff > 0.4 
+      ? 0.5 
+      : traitPotPctDiff > 0.2 
+        ? 0.75 
+        : traitPotPctDiff > -0.25 
+            ? 1
+            : traitPotPctDiff > -0.5
+                ? 0.75
+                : traitPotPctDiff > -0.75
+                    ? 0.5
+                    : 0.25;
+}
+
 function getFactorisedRatings(ratings: any, factors: any) {
   const { pos, ovr, pot, ovrs, pots, season, skills, ...rest } = ratings;
 
@@ -505,10 +500,11 @@ function getFactorisedRatings(ratings: any, factors: any) {
     if (!relatedStats) return acc;
 
     for (const stat of relatedStats) {
+      const multiplier = getTraitPotMultiplier(pot, ratingsCopy[trait]);
       //@ts-ignore
       acc[trait] = +acc[trait] || +ratingsCopy[trait] || 0;
       //@ts-ignore
-      acc[trait] += factors[stat] || 0;
+      acc[trait] += (factors[stat] || 0) * multiplier;
     }
     return acc;
   }, {});
@@ -570,6 +566,9 @@ const statsWithNoPercentageComparsion = [
   "fmbP",
   "pssSk",
   "opponentRusYds",
+  "defInt_plus_defPssDef",
+  "pen",
+  "defPssPct",
 ];
 
 const getStatsWithNoPercentageComparsion = (
@@ -591,7 +590,6 @@ export const comparsionTables = {
   NOT_USED_STATS: notUsedStats,
   VARIANCES,
   STATS_VARIANCES_RELATION: statsAndVariancesRelation,
-  BLOCKING_CHANGE_CALC: { pbkChangeByTeamPssSk, rbkChangeByTeamRusYds },
   getComputedStats,
   getStatsFactors,
   getFactorisedRatings,
